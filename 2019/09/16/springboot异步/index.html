@@ -84,17 +84,17 @@
 
 
 
-<meta name="description" content="接私活必备的10个开源项目！做积极的人，而不是积极废人">
+<meta name="description" content="springboot异步123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354package com.example.demo.config;import org.springframework.context.annotation.Bean;import">
 <meta property="og:type" content="article">
 <meta property="og:title" content="无味春风">
-<meta property="og:url" content="http://yoursite.com/2019/09/11/接私活必备的10个开源项目!/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/09/16/springboot异步/index.html">
 <meta property="og:site_name" content="无味春风">
-<meta property="og:description" content="接私活必备的10个开源项目！做积极的人，而不是积极废人">
+<meta property="og:description" content="springboot异步123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354package com.example.demo.config;import org.springframework.context.annotation.Bean;import">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-11T02:48:35.669Z">
+<meta property="og:updated_time" content="2019-09-16T03:25:35.535Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="无味春风">
-<meta name="twitter:description" content="接私活必备的10个开源项目！做积极的人，而不是积极废人">
+<meta name="twitter:description" content="springboot异步123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354package com.example.demo.config;import org.springframework.context.annotation.Bean;import">
 
 
 
@@ -124,7 +124,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/09/11/接私活必备的10个开源项目!/">
+  <link rel="canonical" href="http://yoursite.com/2019/09/16/springboot异步/">
 
 
 
@@ -278,7 +278,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/11/接私活必备的10个开源项目!/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/16/springboot异步/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="张帆">
@@ -307,8 +307,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-11T10:31:00+08:00">
-                2019-09-11
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-16T16:18:20+08:00">
+                2019-09-16
               </time>
             
 
@@ -350,7 +350,8 @@
       
 
       
-        <h2 id="接私活必备的10个开源项目！"><a href="#接私活必备的10个开源项目！" class="headerlink" title="接私活必备的10个开源项目！"></a>接私活必备的10个开源项目！</h2><p>做积极的人，而不是积极废人</p>
+        <h2 id="springboot异步"><a href="#springboot异步" class="headerlink" title="springboot异步"></a>springboot异步</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.demo.config;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ThreadPoolExecutor;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zhangfan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/9/16</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncPoolConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ThreadPoolTaskExecutor <span class="title">asyncThreadPoolTaskExecutor</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//创建线程池</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         newCachedThreadPool创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。</span></span><br><span class="line"><span class="comment">		newFixedThreadPool 创建一个定长线程池，可控制线程最大并发数，超出的线程会在队列中等待。</span></span><br><span class="line"><span class="comment">		newScheduledThreadPool 创建一个定长线程池，支持定时及周期性任务执行。</span></span><br><span class="line"><span class="comment">		newSingleThreadExecutor 创建一个单线程化的线程池，它只会用唯一的工作线程来执行任务，保证所有任务按照指定顺序(FIFO, LIFO, 优先级)执行。</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        ThreadPoolTaskExecutor executor = <span class="keyword">new</span> ThreadPoolTaskExecutor();</span><br><span class="line">        <span class="comment">//线程池核心线程的数量，默认值为1(这就是默认情况下的异步线程池配置使得线程不能被重用的原因)</span></span><br><span class="line">        executor.setCorePoolSize(<span class="number">20</span>);</span><br><span class="line">        <span class="comment">//线程池维护的线程的最大数量，只有当核心线程都被用完并且缓冲队列满后，才会开始申超过请核心线程数的线程，默认值为Integer.MAX_VALUE</span></span><br><span class="line">        executor.setMaxPoolSize(<span class="number">200</span>);</span><br><span class="line">        <span class="comment">//缓冲队列</span></span><br><span class="line">        executor.setQueueCapacity(<span class="number">25</span>);</span><br><span class="line">        <span class="comment">//超出核心线程数外的线程在空闲时候的最大存活时间，默认为60秒</span></span><br><span class="line">        executor.setKeepAliveSeconds(<span class="number">200</span>);</span><br><span class="line">        <span class="comment">//线程名前缀</span></span><br><span class="line">        executor.setThreadNamePrefix(<span class="string">"asyncThread"</span>);</span><br><span class="line">        <span class="comment">//是否等待所有线程执行完毕才关闭线程池，默认值为false</span></span><br><span class="line">        executor.setWaitForTasksToCompleteOnShutdown(<span class="keyword">true</span>);</span><br><span class="line">        <span class="comment">//waitForTasksToCompleteOnShutdown的等待的时长，默认值为0，即不等待</span></span><br><span class="line">        executor.setAwaitTerminationSeconds(<span class="number">60</span>);</span><br><span class="line">        <span class="comment">//当没有线程可以被使用时的处理策略（拒绝任务），默认策略为abortPolicy，包含下面四种策略</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        1、callerRunsPolicy：用于被拒绝任务的处理程序，它直接在 execute 方法的调用线程中运行被拒绝的任务；如果执行程序已关闭，则会丢弃该任务。</span></span><br><span class="line"><span class="comment">        2、abortPolicy：直接抛出java.util.concurrent.RejectedExecutionException异常。</span></span><br><span class="line"><span class="comment">        3、discardOldestPolicy：当线程池中的数量等于最大线程数时、抛弃线程池中最后一个要执行的任务，并执行新传入的任务。</span></span><br><span class="line"><span class="comment">        4、 discardPolicy：当线程池中的数量等于最大线程数时，不做任何动作。</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        executor.setRejectedExecutionHandler(<span class="keyword">new</span> ThreadPoolExecutor.CallerRunsPolicy());</span><br><span class="line">        executor.initialize();</span><br><span class="line">        <span class="keyword">return</span> executor;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*调用：@Async("asyncThreadPoolTaskExecutor")//been的名称*/</span></span><br><span class="line">    </span><br><span class="line"> <span class="comment">//如果有返回值：</span></span><br><span class="line"> Future&lt;String&gt; stringFuture = testService.asyncMethod();</span><br><span class="line"> String result = stringFuture.get();</span><br><span class="line"><span class="comment">//设置超时</span></span><br><span class="line">stringFuture.get(<span class="number">60</span>, TimeUnit.SECONDS)</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -387,8 +388,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/06/note/" rel="next" title="程序员从入门到入土">
-                <i class="fa fa-chevron-left"></i> 程序员从入门到入土
+              <a href="/2019/09/16/Shiro/" rel="next" title>
+                <i class="fa fa-chevron-left"></i> 
               </a>
             
           </div>
@@ -397,7 +398,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/09/12/springboot全家桶/" rel="prev" title>
+              <a href="/2019/09/16/springboot整合kafka/" rel="prev" title>
                  <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -557,7 +558,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#接私活必备的10个开源项目！"><span class="nav-number">1.</span> <span class="nav-text">接私活必备的10个开源项目！</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#springboot异步"><span class="nav-number">1.</span> <span class="nav-text">springboot异步</span></a></li></ol></div>
             
 
           </div>

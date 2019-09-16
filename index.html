@@ -278,6 +278,518 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/16/springboot整合kafka/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="张帆">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="无味春风">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/16/springboot整合kafka/" itemprop="url">未命名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-16T16:18:20+08:00">
+                2019-09-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="springboot整合kafka"><a href="#springboot整合kafka" class="headerlink" title="springboot整合kafka"></a>springboot整合kafka</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--kafka--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.kafka<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-kafka<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>简单的String类型的消息</p>
+<h3 id="生产者"><a href="#生产者" class="headerlink" title="生产者"></a>生产者</h3><p>配置生产者<em>KafkaProducerConfig</em></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KafkaProducerConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;spring.kafka.bootstrap-servers&#125;"</span>)</span><br><span class="line">    <span class="comment">//Kafka生产者的地址</span></span><br><span class="line">    <span class="keyword">private</span> String bootstrapServers;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ProducerFactory&lt;String, String&gt; <span class="title">producerFactory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Map&lt;String, Object&gt; configProps = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        configProps.put(</span><br><span class="line">                ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,</span><br><span class="line">                bootstrapServers);</span><br><span class="line">        <span class="comment">//key序列化策略</span></span><br><span class="line">        configProps.put(</span><br><span class="line">                ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,</span><br><span class="line">                StringSerializer.class);</span><br><span class="line">      	<span class="comment">//value序列化策略</span></span><br><span class="line">        configProps.put(</span><br><span class="line">                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,</span><br><span class="line">                StringSerializer.class);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DefaultKafkaProducerFactory&lt;&gt;(configProps);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//使用producerFactory配置了kafkaTemplate</span></span><br><span class="line">    <span class="comment">//其包含了发送消息的便捷方法，后面我们就用这个对象来发送消息。</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> KafkaTemplate&lt;String, String&gt; <span class="title">kafkaTemplate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> KafkaTemplate&lt;&gt;(producerFactory());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>发送消息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SendMessageController</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line"> 	<span class="keyword">private</span> Logger logger = LoggerFactory.getLogger(<span class="keyword">this</span>.getClass());</span><br><span class="line">    <span class="comment">//注入了kafkaTemplate对象，key-value都为String类型</span></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> KafkaTemplate&lt;String, String&gt; kafkaTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"send/&#123;message&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">send</span><span class="params">(@PathVariable String message)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//通过它的send方法(异步方法)来发送消息。其中test为Topic的名称</span></span><br><span class="line">        ListenableFuture&lt;SendResult&lt;String, String&gt;&gt; future = <span class="keyword">this</span>.kafkaTemplate.send(<span class="string">"test"</span>, message);</span><br><span class="line">        <span class="comment">//通过回调的方式来确定消息是否发送成功</span></span><br><span class="line">        <span class="comment">//消息发送成功后，会回调onSuccess方法，发送失败后回调onFailure方法</span></span><br><span class="line">        future.addCallback(<span class="keyword">new</span> ListenableFutureCallback&lt;SendResult&lt;String, String&gt;&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSuccess</span><span class="params">(SendResult&lt;String, String&gt; result)</span> </span>&#123;</span><br><span class="line">                logger.info(<span class="string">"成功发送消息：&#123;&#125;，offset=[&#123;&#125;]"</span>, message, result.getRecordMetadata().offset());</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFailure</span><span class="params">(Throwable ex)</span> </span>&#123;</span><br><span class="line">                logger.error(<span class="string">"消息：&#123;&#125; 发送失败，原因：&#123;&#125;"</span>, message, ex.getMessage());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="消费者"><a href="#消费者" class="headerlink" title="消费者"></a>消费者</h3><p>消费者配置类<em>KafkaConsumerConfig</em></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//@EnableKafka注释才能在Spring托管Bean上检测@KafkaListener注解</span></span><br><span class="line"><span class="meta">@EnableKafka</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KafkaConsumerConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;spring.kafka.bootstrap-servers&#125;"</span>)</span><br><span class="line">    <span class="keyword">private</span> String bootstrapServers;</span><br><span class="line">	<span class="comment">//消费者进行分组</span></span><br><span class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;spring.kafka.consumer.group-id&#125;"</span>)</span><br><span class="line">    <span class="keyword">private</span> String consumerGroupId;</span><br><span class="line">	<span class="comment">//指定了消息读取策略</span></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    1、earliest:当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，从头开始消费</span></span><br><span class="line"><span class="comment">    2、latest:当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，消费新产生的该分区下的数据</span></span><br><span class="line"><span class="comment">    3、none:topic各分区都存在已提交的offset时，从offset后开始消费；只要有一个分区不存在已提交的offset，则抛出异常</span></span><br><span class="line"><span class="comment">    4、exception:直接抛出异常</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;spring.kafka.consumer.auto-offset-reset&#125;"</span>)</span><br><span class="line">    <span class="keyword">private</span> String autoOffsetReset;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ConsumerFactory&lt;String, String&gt; <span class="title">consumerFactory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Map&lt;String, Object&gt; props = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        props.put(</span><br><span class="line">                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,</span><br><span class="line">                bootstrapServers);</span><br><span class="line">        props.put(</span><br><span class="line">                ConsumerConfig.GROUP_ID_CONFIG,</span><br><span class="line">                consumerGroupId);</span><br><span class="line">        props.put(</span><br><span class="line">                ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,</span><br><span class="line">                autoOffsetReset);</span><br><span class="line">        props.put(</span><br><span class="line">                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,</span><br><span class="line">                StringDeserializer.class);</span><br><span class="line">        props.put(</span><br><span class="line">                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,</span><br><span class="line">                StringDeserializer.class);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DefaultKafkaConsumerFactory&lt;&gt;(props);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//配置ConsumerFactory和KafkaListenerContainerFactory。</span></span><br><span class="line">    <span class="comment">//当这两个Bean成功注册到Spring IOC容器中后，我们便可以使用@KafkaListener注解来监听消息了。</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ConcurrentKafkaListenerContainerFactory&lt;String, String&gt; <span class="title">kafkaListenerContainerFactory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        ConcurrentKafkaListenerContainerFactory&lt;String, String&gt; factory</span><br><span class="line">                = <span class="keyword">new</span> ConcurrentKafkaListenerContainerFactory&lt;&gt;();</span><br><span class="line">        factory.setConsumerFactory(consumerFactory());</span><br><span class="line">         <span class="comment">// ------- 过滤配置 --------</span></span><br><span class="line">        factory.setRecordFilterStrategy(</span><br><span class="line">                r -&gt; r.value().contains(<span class="string">"过滤信息"</span>)</span><br><span class="line">        );</span><br><span class="line">            <span class="keyword">return</span> factory;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>消费消息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KafkaMessageListener</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Logger logger = LoggerFactory.getLogger(<span class="keyword">this</span>.getClass());</span><br><span class="line">	<span class="comment">//@KafkaListener注解来监听名称为test的Topic，消费者分组的组名为test-consumer</span></span><br><span class="line">    <span class="meta">@KafkaListener</span>(topics = <span class="string">"test"</span>, groupId = <span class="string">"test-consumer"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">listen</span><span class="params">(String message)</span> </span>&#123;</span><br><span class="line">        logger.info(<span class="string">"接收消息: &#123;&#125;"</span>, message);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="KafkaListener"><a href="#KafkaListener" class="headerlink" title="@KafkaListener"></a>@KafkaListener</h4><p>1、@KafkaListener`除了可以指定Topic名称和分组id外，我们还可以同时监听来自多个Topic的消息，以逗号隔开</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@KafkaListener</span>(topics = <span class="string">"topic1, topic2"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>2、通过<code>@Header</code>注解来获取当前消息来自哪个分区（partitions）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@KafkaListener</span>(topics = <span class="string">"test"</span>, groupId = <span class="string">"test-consumer"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">listen</span><span class="params">(@Payload String message,</span></span></span><br><span class="line"><span class="function"><span class="params">                   @Header(KafkaHeaders.RECEIVED_PARTITION_ID)</span> <span class="keyword">int</span> partition) </span>&#123;</span><br><span class="line">    logger.info(<span class="string">"接收消息: &#123;&#125;，partition：&#123;&#125;"</span>, message, partition);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>test Topic分区，下标从0开始</p>
+<p>3、通过<code>@KafkaListener</code>来指定只接收来自特定分区的消息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@KafkaListener</span>(groupId = <span class="string">"test-consumer"</span>,</span><br><span class="line">        topicPartitions = <span class="meta">@TopicPartition</span>(topic = <span class="string">"test"</span>,</span><br><span class="line">                partitionOffsets = &#123;</span><br><span class="line">                        <span class="meta">@PartitionOffset</span>(partition = <span class="string">"0"</span>, initialOffset = <span class="string">"0"</span>)</span><br><span class="line">            &#125;))</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">listen</span><span class="params">(@Payload String message,</span></span></span><br><span class="line"><span class="function"><span class="params">                   @Header(KafkaHeaders.RECEIVED_PARTITION_ID)</span> <span class="keyword">int</span> partition) </span>&#123;</span><br><span class="line">    logger.info(<span class="string">"接收消息: &#123;&#125;，partition：&#123;&#125;"</span>, message, partition);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>4、配置消息过滤器</p>
+<p>发送复杂的消息</p>
+<p>1、消息生产者的value的序列化策略指定为kafka提供的<em>JsonSerializer</em>，并且kafkaTemplate返回类型为<code>KafkaTemplate&lt;String, Message&gt;</code></p>
+<p>2、消息消费者的value的序列化策略指定为kafka提供的<em>JsonSerializer</em>，并且kafkaTemplate返回类型为<code>KafkaTemplate&lt;String, Message&gt;</code></p>
+<p>kafka更多配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line">spring.kafka.admin.client-id= # ID to pass to the server when making requests. Used for server-side logging.</span><br><span class="line">spring.kafka.admin.fail-fast=false # Whether to fail fast if the broker is not available on startup.</span><br><span class="line">spring.kafka.admin.properties.*= # Additional admin-specific properties used to configure the client.</span><br><span class="line">spring.kafka.admin.ssl.key-password= # Password of the private key in the key store file.</span><br><span class="line">spring.kafka.admin.ssl.key-store-location= # Location of the key store file.</span><br><span class="line">spring.kafka.admin.ssl.key-store-password= # Store password for the key store file.</span><br><span class="line">spring.kafka.admin.ssl.key-store-type= # Type of the key store.</span><br><span class="line">spring.kafka.admin.ssl.protocol= # SSL protocol to use.</span><br><span class="line">spring.kafka.admin.ssl.trust-store-location= # Location of the trust store file.</span><br><span class="line">spring.kafka.admin.ssl.trust-store-password= # Store password for the trust store file.</span><br><span class="line">spring.kafka.admin.ssl.trust-store-type= # Type of the trust store.</span><br><span class="line">spring.kafka.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connections to the Kafka cluster. Applies to all components unless overridden.</span><br><span class="line">spring.kafka.client-id= # ID to pass to the server when making requests. Used for server-side logging.</span><br><span class="line">spring.kafka.consumer.auto-commit-interval= # Frequency with which the consumer offsets are auto-committed to Kafka if &apos;enable.auto.commit&apos; is set to true.</span><br><span class="line">spring.kafka.consumer.auto-offset-reset= # What to do when there is no initial offset in Kafka or if the current offset no longer exists on the server.</span><br><span class="line">spring.kafka.consumer.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connections to the Kafka cluster. Overrides the global property, for consumers.</span><br><span class="line">spring.kafka.consumer.client-id= # ID to pass to the server when making requests. Used for server-side logging.</span><br><span class="line">spring.kafka.consumer.enable-auto-commit= # Whether the consumer&apos;s offset is periodically committed in the background.</span><br><span class="line">spring.kafka.consumer.fetch-max-wait= # Maximum amount of time the server blocks before answering the fetch request if there isn&apos;t sufficient data to immediately satisfy the requirement given by &quot;fetch-min-size&quot;.</span><br><span class="line">spring.kafka.consumer.fetch-min-size= # Minimum amount of data the server should return for a fetch request.</span><br><span class="line">spring.kafka.consumer.group-id= # Unique string that identifies the consumer group to which this consumer belongs.</span><br><span class="line">spring.kafka.consumer.heartbeat-interval= # Expected time between heartbeats to the consumer coordinator.</span><br><span class="line">spring.kafka.consumer.key-deserializer= # Deserializer class for keys.</span><br><span class="line">spring.kafka.consumer.max-poll-records= # Maximum number of records returned in a single call to poll().</span><br><span class="line">spring.kafka.consumer.properties.*= # Additional consumer-specific properties used to configure the client.</span><br><span class="line">spring.kafka.consumer.ssl.key-password= # Password of the private key in the key store file.</span><br><span class="line">spring.kafka.consumer.ssl.key-store-location= # Location of the key store file.</span><br><span class="line">spring.kafka.consumer.ssl.key-store-password= # Store password for the key store file.</span><br><span class="line">spring.kafka.consumer.ssl.key-store-type= # Type of the key store.</span><br><span class="line">spring.kafka.consumer.ssl.protocol= # SSL protocol to use.</span><br><span class="line">spring.kafka.consumer.ssl.trust-store-location= # Location of the trust store file.</span><br><span class="line">spring.kafka.consumer.ssl.trust-store-password= # Store password for the trust store file.</span><br><span class="line">spring.kafka.consumer.ssl.trust-store-type= # Type of the trust store.</span><br><span class="line">spring.kafka.consumer.value-deserializer= # Deserializer class for values.</span><br><span class="line">spring.kafka.jaas.control-flag=required # Control flag for login configuration.</span><br><span class="line">spring.kafka.jaas.enabled=false # Whether to enable JAAS configuration.</span><br><span class="line">spring.kafka.jaas.login-module=com.sun.security.auth.module.Krb5LoginModule # Login module.</span><br><span class="line">spring.kafka.jaas.options= # Additional JAAS options.</span><br><span class="line">spring.kafka.listener.ack-count= # Number of records between offset commits when ackMode is &quot;COUNT&quot; or &quot;COUNT_TIME&quot;.</span><br><span class="line">spring.kafka.listener.ack-mode= # Listener AckMode. See the spring-kafka documentation.</span><br><span class="line">spring.kafka.listener.ack-time= # Time between offset commits when ackMode is &quot;TIME&quot; or &quot;COUNT_TIME&quot;.</span><br><span class="line">spring.kafka.listener.client-id= # Prefix for the listener&apos;s consumer client.id property.</span><br><span class="line">spring.kafka.listener.concurrency= # Number of threads to run in the listener containers.</span><br><span class="line">spring.kafka.listener.idle-event-interval= # Time between publishing idle consumer events (no data received).</span><br><span class="line">spring.kafka.listener.log-container-config= # Whether to log the container configuration during initialization (INFO level).</span><br><span class="line">spring.kafka.listener.monitor-interval= # Time between checks for non-responsive consumers. If a duration suffix is not specified, seconds will be used.</span><br><span class="line">spring.kafka.listener.no-poll-threshold= # Multiplier applied to &quot;pollTimeout&quot; to determine if a consumer is non-responsive.</span><br><span class="line">spring.kafka.listener.poll-timeout= # Timeout to use when polling the consumer.</span><br><span class="line">spring.kafka.listener.type=single # Listener type.</span><br><span class="line">spring.kafka.producer.acks= # Number of acknowledgments the producer requires the leader to have received before considering a request complete.</span><br><span class="line">spring.kafka.producer.batch-size= # Default batch size.</span><br><span class="line">spring.kafka.producer.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connections to the Kafka cluster. Overrides the global property, for producers.</span><br><span class="line">spring.kafka.producer.buffer-memory= # Total memory size the producer can use to buffer records waiting to be sent to the server.</span><br><span class="line">spring.kafka.producer.client-id= # ID to pass to the server when making requests. Used for server-side logging.</span><br><span class="line">spring.kafka.producer.compression-type= # Compression type for all data generated by the producer.</span><br><span class="line">spring.kafka.producer.key-serializer= # Serializer class for keys.</span><br><span class="line">spring.kafka.producer.properties.*= # Additional producer-specific properties used to configure the client.</span><br><span class="line">spring.kafka.producer.retries= # When greater than zero, enables retrying of failed sends.</span><br><span class="line">spring.kafka.producer.ssl.key-password= # Password of the private key in the key store file.</span><br><span class="line">spring.kafka.producer.ssl.key-store-location= # Location of the key store file.</span><br><span class="line">spring.kafka.producer.ssl.key-store-password= # Store password for the key store file.</span><br><span class="line">spring.kafka.producer.ssl.key-store-type= # Type of the key store.</span><br><span class="line">spring.kafka.producer.ssl.protocol= # SSL protocol to use.</span><br><span class="line">spring.kafka.producer.ssl.trust-store-location= # Location of the trust store file.</span><br><span class="line">spring.kafka.producer.ssl.trust-store-password= # Store password for the trust store file.</span><br><span class="line">spring.kafka.producer.ssl.trust-store-type= # Type of the trust store.</span><br><span class="line">spring.kafka.producer.transaction-id-prefix= # When non empty, enables transaction support for producer.</span><br><span class="line">spring.kafka.producer.value-serializer= # Serializer class for values.</span><br><span class="line">spring.kafka.properties.*= # Additional properties, common to producers and consumers, used to configure the client.</span><br><span class="line">spring.kafka.ssl.key-password= # Password of the private key in the key store file.</span><br><span class="line">spring.kafka.ssl.key-store-location= # Location of the key store file.</span><br><span class="line">spring.kafka.ssl.key-store-password= # Store password for the key store file.</span><br><span class="line">spring.kafka.ssl.key-store-type= # Type of the key store.</span><br><span class="line">spring.kafka.ssl.protocol= # SSL protocol to use.</span><br><span class="line">spring.kafka.ssl.trust-store-location= # Location of the trust store file.</span><br><span class="line">spring.kafka.ssl.trust-store-password= # Store password for the trust store file.</span><br><span class="line">spring.kafka.ssl.trust-store-type= # Type of the trust store.</span><br><span class="line">spring.kafka.streams.application-id= # Kafka streams application.id property; default spring.application.name.</span><br><span class="line">spring.kafka.streams.auto-startup=true # Whether or not to auto-start the streams factory bean.</span><br><span class="line">spring.kafka.streams.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connections to the Kafka cluster. Overrides the global property, for streams.</span><br><span class="line">spring.kafka.streams.cache-max-size-buffering= # Maximum memory size to be used for buffering across all threads.</span><br><span class="line">spring.kafka.streams.client-id= # ID to pass to the server when making requests. Used for server-side logging.</span><br><span class="line">spring.kafka.streams.properties.*= # Additional Kafka properties used to configure the streams.</span><br><span class="line">spring.kafka.streams.replication-factor= # The replication factor for change log topics and repartition topics created by the stream processing application.</span><br><span class="line">spring.kafka.streams.ssl.key-password= # Password of the private key in the key store file.</span><br><span class="line">spring.kafka.streams.ssl.key-store-location= # Location of the key store file.</span><br><span class="line">spring.kafka.streams.ssl.key-store-password= # Store password for the key store file.</span><br><span class="line">spring.kafka.streams.ssl.key-store-type= # Type of the key store.</span><br><span class="line">spring.kafka.streams.ssl.protocol= # SSL protocol to use.</span><br><span class="line">spring.kafka.streams.ssl.trust-store-location= # Location of the trust store file.</span><br><span class="line">spring.kafka.streams.ssl.trust-store-password= # Store password for the trust store file.</span><br><span class="line">spring.kafka.streams.ssl.trust-store-type= # Type of the trust store.</span><br><span class="line">spring.kafka.streams.state-dir= # Directory location for the state store.</span><br><span class="line">spring.kafka.template.default-topic= # Default topic to which messages are sent.</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    <div>
+      
+    </div>
+
+  
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/16/springboot异步/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="张帆">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="无味春风">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/16/springboot异步/" itemprop="url">未命名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-16T16:18:20+08:00">
+                2019-09-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="springboot异步"><a href="#springboot异步" class="headerlink" title="springboot异步"></a>springboot异步</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.demo.config;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ThreadPoolExecutor;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> zhangfan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/9/16</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncPoolConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ThreadPoolTaskExecutor <span class="title">asyncThreadPoolTaskExecutor</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//创建线程池</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         newCachedThreadPool创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。</span></span><br><span class="line"><span class="comment">		newFixedThreadPool 创建一个定长线程池，可控制线程最大并发数，超出的线程会在队列中等待。</span></span><br><span class="line"><span class="comment">		newScheduledThreadPool 创建一个定长线程池，支持定时及周期性任务执行。</span></span><br><span class="line"><span class="comment">		newSingleThreadExecutor 创建一个单线程化的线程池，它只会用唯一的工作线程来执行任务，保证所有任务按照指定顺序(FIFO, LIFO, 优先级)执行。</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        ThreadPoolTaskExecutor executor = <span class="keyword">new</span> ThreadPoolTaskExecutor();</span><br><span class="line">        <span class="comment">//线程池核心线程的数量，默认值为1(这就是默认情况下的异步线程池配置使得线程不能被重用的原因)</span></span><br><span class="line">        executor.setCorePoolSize(<span class="number">20</span>);</span><br><span class="line">        <span class="comment">//线程池维护的线程的最大数量，只有当核心线程都被用完并且缓冲队列满后，才会开始申超过请核心线程数的线程，默认值为Integer.MAX_VALUE</span></span><br><span class="line">        executor.setMaxPoolSize(<span class="number">200</span>);</span><br><span class="line">        <span class="comment">//缓冲队列</span></span><br><span class="line">        executor.setQueueCapacity(<span class="number">25</span>);</span><br><span class="line">        <span class="comment">//超出核心线程数外的线程在空闲时候的最大存活时间，默认为60秒</span></span><br><span class="line">        executor.setKeepAliveSeconds(<span class="number">200</span>);</span><br><span class="line">        <span class="comment">//线程名前缀</span></span><br><span class="line">        executor.setThreadNamePrefix(<span class="string">"asyncThread"</span>);</span><br><span class="line">        <span class="comment">//是否等待所有线程执行完毕才关闭线程池，默认值为false</span></span><br><span class="line">        executor.setWaitForTasksToCompleteOnShutdown(<span class="keyword">true</span>);</span><br><span class="line">        <span class="comment">//waitForTasksToCompleteOnShutdown的等待的时长，默认值为0，即不等待</span></span><br><span class="line">        executor.setAwaitTerminationSeconds(<span class="number">60</span>);</span><br><span class="line">        <span class="comment">//当没有线程可以被使用时的处理策略（拒绝任务），默认策略为abortPolicy，包含下面四种策略</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        1、callerRunsPolicy：用于被拒绝任务的处理程序，它直接在 execute 方法的调用线程中运行被拒绝的任务；如果执行程序已关闭，则会丢弃该任务。</span></span><br><span class="line"><span class="comment">        2、abortPolicy：直接抛出java.util.concurrent.RejectedExecutionException异常。</span></span><br><span class="line"><span class="comment">        3、discardOldestPolicy：当线程池中的数量等于最大线程数时、抛弃线程池中最后一个要执行的任务，并执行新传入的任务。</span></span><br><span class="line"><span class="comment">        4、 discardPolicy：当线程池中的数量等于最大线程数时，不做任何动作。</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        executor.setRejectedExecutionHandler(<span class="keyword">new</span> ThreadPoolExecutor.CallerRunsPolicy());</span><br><span class="line">        executor.initialize();</span><br><span class="line">        <span class="keyword">return</span> executor;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*调用：@Async("asyncThreadPoolTaskExecutor")//been的名称*/</span></span><br><span class="line">    </span><br><span class="line"> <span class="comment">//如果有返回值：</span></span><br><span class="line"> Future&lt;String&gt; stringFuture = testService.asyncMethod();</span><br><span class="line"> String result = stringFuture.get();</span><br><span class="line"><span class="comment">//设置超时</span></span><br><span class="line">stringFuture.get(<span class="number">60</span>, TimeUnit.SECONDS)</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    <div>
+      
+    </div>
+
+  
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/16/Shiro/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="张帆">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="无味春风">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/16/Shiro/" itemprop="url">未命名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-16T16:18:20+08:00">
+                2019-09-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Shiro"><a href="#Shiro" class="headerlink" title="Shiro"></a>Shiro</h2><p><img src="C:%5CUsers%5Cyhjr%5CDesktop%5CShiro.jpg" alt></p>
+<p><strong>Subject</strong> </p>
+<p><strong>SecurityManager</strong></p>
+<p><strong>Realm</strong></p>
+<h2 id="springboot-Shiro"><a href="#springboot-Shiro" class="headerlink" title="springboot+Shiro"></a>springboot+Shiro</h2><p>步骤</p>
+<p>1、定义一个ShiroConfig，然后配置SecurityManager Bean，SecurityManager为Shiro的安全管理器，管理着所有Subject；</p>
+<p>2、在ShiroConfig中配置ShiroFilterFactoryBean，其为Shiro过滤器工厂类，依赖于SecurityManager；</p>
+<p>3、自定义Realm实现，Realm包含<code>doGetAuthorizationInfo()</code>和<code>doGetAuthenticationInfo()</code>方法，因为本文只涉及用户认证，所以只实现<code>doGetAuthenticationInfo()</code>方法。</p>
+<h3 id="ShiroConfig"><a href="#ShiroConfig" class="headerlink" title="ShiroConfig"></a>ShiroConfig</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ShiroConfig</span> </span>&#123;</span><br><span class="line">    <span class="comment">//Shiro自带的拦截</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ShiroFilterFactoryBean <span class="title">shiroFilterFactoryBean</span><span class="params">(SecurityManager securityManager)</span> </span>&#123;</span><br><span class="line">        ShiroFilterFactoryBean shiroFilterFactoryBean = <span class="keyword">new</span> ShiroFilterFactoryBean();</span><br><span class="line">        <span class="comment">// 设置securityManager</span></span><br><span class="line">        shiroFilterFactoryBean.setSecurityManager(securityManager);</span><br><span class="line">        <span class="comment">// 登录的url</span></span><br><span class="line">        shiroFilterFactoryBean.setLoginUrl(<span class="string">"/login"</span>);</span><br><span class="line">        <span class="comment">// 登录成功后跳转的url</span></span><br><span class="line">        shiroFilterFactoryBean.setSuccessUrl(<span class="string">"/index"</span>);</span><br><span class="line">        <span class="comment">// 未授权url</span></span><br><span class="line">        shiroFilterFactoryBean.setUnauthorizedUrl(<span class="string">"/403"</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//注意的是filterChain基于短路机制，即最先匹配原则</span></span><br><span class="line">        LinkedHashMap&lt;String, String&gt; filterChainDefinitionMap = <span class="keyword">new</span> LinkedHashMap&lt;&gt;();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 定义filterChain，静态资源不拦截</span></span><br><span class="line">        <span class="comment">//anon、authc等为Shiro为我们实现的过滤器</span></span><br><span class="line">        filterChainDefinitionMap.put(<span class="string">"/css/**"</span>, <span class="string">"anon"</span>);</span><br><span class="line">        filterChainDefinitionMap.put(<span class="string">"/js/**"</span>, <span class="string">"anon"</span>);</span><br><span class="line">        filterChainDefinitionMap.put(<span class="string">"/fonts/**"</span>, <span class="string">"anon"</span>);</span><br><span class="line">        filterChainDefinitionMap.put(<span class="string">"/img/**"</span>, <span class="string">"anon"</span>);</span><br><span class="line">        <span class="comment">// druid数据源监控页面不拦截</span></span><br><span class="line">        filterChainDefinitionMap.put(<span class="string">"/druid/**"</span>, <span class="string">"anon"</span>);</span><br><span class="line">        <span class="comment">// 配置退出过滤器，其中具体的退出代码Shiro已经替我们实现了 </span></span><br><span class="line">        filterChainDefinitionMap.put(<span class="string">"/logout"</span>, <span class="string">"logout"</span>);</span><br><span class="line">        filterChainDefinitionMap.put(<span class="string">"/"</span>, <span class="string">"anon"</span>);</span><br><span class="line">        <span class="comment">// 除上以外所有url都必须认证通过才可以访问，未通过认证自动访问LoginUrl</span></span><br><span class="line">        filterChainDefinitionMap.put(<span class="string">"/**"</span>, <span class="string">"user"</span>);</span><br><span class="line">        </span><br><span class="line">        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);</span><br><span class="line">        <span class="keyword">return</span> shiroFilterFactoryBean;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    <span class="meta">@Bean</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> SecurityManager <span class="title">securityManager</span><span class="params">()</span></span>&#123;  </span><br><span class="line">        <span class="comment">// 配置SecurityManager，并注入shiroRealm</span></span><br><span class="line">        DefaultWebSecurityManager securityManager =  <span class="keyword">new</span> DefaultWebSecurityManager();</span><br><span class="line">        securityManager.setRealm(shiroRealm());</span><br><span class="line">        securityManager.setRememberMeManager(rememberMeManager());</span><br><span class="line">        <span class="keyword">return</span> securityManager;  </span><br><span class="line">    &#125; </span><br><span class="line">    </span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    权限：</span></span><br><span class="line"><span class="comment">    // 表示当前Subject已经通过login进行了身份验证；即Subject.isAuthenticated()返回true。</span></span><br><span class="line"><span class="comment">	@RequiresAuthentication  </span></span><br><span class="line"><span class="comment">	// 表示当前Subject已经身份验证或者通过记住我登录的。</span></span><br><span class="line"><span class="comment">	@RequiresUser  </span></span><br><span class="line"><span class="comment">	// 表示当前Subject没有身份验证或通过记住我登录过，即是游客身份。</span></span><br><span class="line"><span class="comment">	@RequiresGuest  </span></span><br><span class="line"><span class="comment">	// 表示当前Subject需要角色admin和user。  </span></span><br><span class="line"><span class="comment">	@RequiresRoles(value=&#123;"admin", "user"&#125;, logical= Logical.AND)  </span></span><br><span class="line"><span class="comment">	// 表示当前Subject需要权限user:a或user:b。</span></span><br><span class="line"><span class="comment">	@RequiresPermissions (value=&#123;"user:a", "user:b"&#125;, logical= Logical.OR)</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> AuthorizationAttributeSourceAdvisor <span class="title">authorizationAttributeSourceAdvisor</span><span class="params">(SecurityManager securityManager)</span> </span>&#123;</span><br><span class="line">    	AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = <span class="keyword">new</span> AuthorizationAttributeSourceAdvisor();</span><br><span class="line">    	authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);</span><br><span class="line">     	<span class="keyword">return</span> authorizationAttributeSourceAdvisor;</span><br><span class="line">    &#125;	</span><br><span class="line">	</span><br><span class="line">    <span class="meta">@Bean</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> ShiroRealm <span class="title">shiroRealm</span><span class="params">()</span></span>&#123;  </span><br><span class="line">        <span class="comment">// 配置Realm，需自己实现</span></span><br><span class="line">        ShiroRealm shiroRealm = <span class="keyword">new</span> ShiroRealm();  </span><br><span class="line">        <span class="keyword">return</span> shiroRealm;  </span><br><span class="line">    &#125;  </span><br><span class="line">    </span><br><span class="line">    <span class="comment">//记住我</span></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * cookie对象</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SimpleCookie <span class="title">rememberMeCookie</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 设置cookie名称，对应login.html页面的&lt;input type="checkbox" name="rememberMe"/&gt;</span></span><br><span class="line">        SimpleCookie cookie = <span class="keyword">new</span> SimpleCookie(<span class="string">"rememberMe"</span>);</span><br><span class="line">        <span class="comment">// 设置cookie的过期时间，单位为秒，这里为一天</span></span><br><span class="line">        cookie.setMaxAge(<span class="number">86400</span>);</span><br><span class="line">        <span class="keyword">return</span> cookie;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * cookie管理对象</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> CookieRememberMeManager <span class="title">rememberMeManager</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        CookieRememberMeManager cookieRememberMeManager = <span class="keyword">new</span> CookieRememberMeManager();</span><br><span class="line">        cookieRememberMeManager.setCookie(rememberMeCookie());</span><br><span class="line">        <span class="comment">// rememberMe cookie加密的密钥 </span></span><br><span class="line">        cookieRememberMeManager.setCipherKey(Base64.decode(<span class="string">"4AvVhmFLUs0KTA3Kprsdag=="</span>));</span><br><span class="line">        <span class="keyword">return</span> cookieRememberMeManager;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>过滤器</p>
+<table>
+<thead>
+<tr>
+<th><strong>Filter Name</strong></th>
+<th><strong>Class</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>anon</td>
+<td><a href="http://shiro.apache.org/static/current/apidocs/org/apache/shiro/web/filter/authc/AnonymousFilter.html" target="_blank" rel="noopener">org.apache.shiro.web.filter.authc.AnonymousFilter</a></td>
+<td>匿名拦截器，即不需要登录即可访问；一般用于静态资源过滤；示例<code>/static/**=anon</code></td>
+</tr>
+<tr>
+<td>authc</td>
+<td><a href="http://shiro.apache.org/static/current/apidocs/org/apache/shiro/web/filter/authc/FormAuthenticationFilter.html" target="_blank" rel="noopener">org.apache.shiro.web.filter.authc.FormAuthenticationFilter</a></td>
+<td>基于表单的拦截器；如<code>/**=authc</code>，如果没有登录会跳到相应的登录页面登录</td>
+</tr>
+<tr>
+<td>authcBasic</td>
+<td><a href="http://shiro.apache.org/static/current/apidocs/org/apache/shiro/web/filter/authc/BasicHttpAuthenticationFilter.html" target="_blank" rel="noopener">org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter</a></td>
+<td>Basic HTTP身份验证拦截器</td>
+</tr>
+<tr>
+<td>logout</td>
+<td><a href="http://shiro.apache.org/static/current/apidocs/org/apache/shiro/web/filter/authc/LogoutFilter.html" target="_blank" rel="noopener">org.apache.shiro.web.filter.authc.LogoutFilter</a></td>
+<td>退出拦截器，主要属性：redirectUrl：退出成功后重定向的地址（/），示例<code>/logout=logout</code></td>
+</tr>
+<tr>
+<td>noSessionCreation</td>
+<td><a href="http://shiro.apache.org/static/current/apidocs/org/apache/shiro/web/filter/session/NoSessionCreationFilter.html" target="_blank" rel="noopener">org.apache.shiro.web.filter.session.NoSessionCreationFilter</a></td>
+<td>不创建会话拦截器，调用<code>subject.getSession(false)</code>不会有什么问题，但是如果<code>subject.getSession(true)</code>将抛出<code>DisabledSessionException</code>异常</td>
+</tr>
+<tr>
+<td>perms</td>
+<td><a href="http://shiro.apache.org/static/current/apidocs/org/apache/shiro/web/filter/authz/PermissionsAuthorizationFilter.html" target="_blank" rel="noopener">org.apache.shiro.web.filter.authz.PermissionsAuthorizationFilter</a></td>
+<td>权限授权拦截器，验证用户是否拥有所有权限；属性和roles一样；示例<code>/user/**=perms[&quot;user:create&quot;]</code></td>
+</tr>
+<tr>
+<td>port</td>
+<td><a href="http://shiro.apache.org/static/current/apidocs/org/apache/shiro/web/filter/authz/PortFilter.html" target="_blank" rel="noopener"><br>org.apache.shiro.web.filter.authz.PortFilter</a></td>
+<td>端口拦截器，主要属性<code>port(80)</code>：可以通过的端口；示例<code>/test= port[80]</code>，如果用户访问该页面是非80，将自动将请求端口改为80并重定向到该80端口，其他路径/参数等都一样</td>
+</tr>
+<tr>
+<td>rest</td>
+<td><a href="http://shiro.apache.org/static/current/apidocs/org/apache/shiro/web/filter/authz/HttpMethodPermissionFilter.html" target="_blank" rel="noopener"><br>org.apache.shiro.web.filter.authz.HttpMethodPermissionFilter</a></td>
+<td>rest风格拦截器，自动根据请求方法构建权限字符串；示例<code>/users=rest[user]</code>，会自动拼出user:read,user:create,user:update,user:delete权限字符串进行权限匹配（所有都得匹配，isPermittedAll）</td>
+</tr>
+<tr>
+<td>roles</td>
+<td><a href="http://shiro.apache.org/static/current/apidocs/org/apache/shiro/web/filter/authz/RolesAuthorizationFilter.html" target="_blank" rel="noopener">org.apache.shiro.web.filter.authz.RolesAuthorizationFilter</a></td>
+<td>角色授权拦截器，验证用户是否拥有所有角色；示例<code>/admin/**=roles[admin]</code></td>
+</tr>
+<tr>
+<td>ssl</td>
+<td><a href="http://shiro.apache.org/static/current/apidocs/org/apache/shiro/web/filter/authz/SslFilter.html" target="_blank" rel="noopener">org.apache.shiro.web.filter.authz.SslFilter</a></td>
+<td>SSL拦截器，只有请求协议是https才能通过；否则自动跳转会https端口443；其他和port拦截器一样；</td>
+</tr>
+<tr>
+<td>user</td>
+<td><a href="http://shiro.apache.org/static/current/apidocs/org/apache/shiro/web/filter/authc/UserFilter.html" target="_blank" rel="noopener">org.apache.shiro.web.filter.authc.UserFilter</a></td>
+<td>用户拦截器，用户已经身份验证/记住我登录的都可；示例<code>/**=user</code></td>
+</tr>
+</tbody></table>
+<h2 id="Realm"><a href="#Realm" class="headerlink" title="Realm"></a>Realm</h2><p>自定义Realm实现只需继承AuthorizingRealm类，然后实现doGetAuthorizationInfo()和doGetAuthenticationInfo()方法即可</p>
+<p>authorization：为授权，批准的意思，即获取用户的角色和权限等信息    。</p>
+<p>authentication：认证，身份验证的意思，即登录时验证用户的合法性，比如验证用户名和密码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ShiroRealm</span> <span class="keyword">extends</span> <span class="title">AuthorizingRealm</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserMapper userMapper;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserRoleMapper userRoleMapper;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserPermissionMapper userPermissionMapper;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 获取用户角色和权限</span></span><br><span class="line"><span class="comment">    * userRoleMapper.findByUserName(userName)获取了当前登录用户的角色集</span></span><br><span class="line"><span class="comment">    * userPermissionMapper.findByUserName(userName)获取了当前登录用户的权限集</span></span><br><span class="line"><span class="comment">    * 然后保存到SimpleAuthorizationInfo对象中，并返回给Shiro。</span></span><br><span class="line"><span class="comment">    * 这样Shiro中就存储了当前用户的角色和权限信息了</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> AuthorizationInfo <span class="title">doGetAuthorizationInfo</span><span class="params">(PrincipalCollection principal)</span> </span>&#123;</span><br><span class="line">        User user = (User) SecurityUtils.getSubject().getPrincipal();</span><br><span class="line">        String userName = user.getUserName();</span><br><span class="line">        </span><br><span class="line">        System.out.println(<span class="string">"用户"</span> + userName + <span class="string">"获取权限-----ShiroRealm.doGetAuthorizationInfo"</span>);</span><br><span class="line">        SimpleAuthorizationInfo simpleAuthorizationInfo = <span class="keyword">new</span> SimpleAuthorizationInfo();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 获取用户角色集</span></span><br><span class="line">        List&lt;Role&gt; roleList = userRoleMapper.findByUserName(userName);</span><br><span class="line">        Set&lt;String&gt; roleSet = <span class="keyword">new</span> HashSet&lt;String&gt;();</span><br><span class="line">        <span class="keyword">for</span> (Role r : roleList) &#123;</span><br><span class="line">            roleSet.add(r.getName());</span><br><span class="line">        &#125;</span><br><span class="line">        simpleAuthorizationInfo.setRoles(roleSet);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 获取用户权限集</span></span><br><span class="line">        List&lt;Permission&gt; permissionList = userPermissionMapper.findByUserName(userName);</span><br><span class="line">        Set&lt;String&gt; permissionSet = <span class="keyword">new</span> HashSet&lt;String&gt;();</span><br><span class="line">        <span class="keyword">for</span> (Permission p : permissionList) &#123;</span><br><span class="line">            permissionSet.add(p.getName());</span><br><span class="line">        &#125;</span><br><span class="line">        simpleAuthorizationInfo.setStringPermissions(permissionSet);</span><br><span class="line">        <span class="keyword">return</span> simpleAuthorizationInfo;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 登录认证</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> AuthenticationInfo <span class="title">doGetAuthenticationInfo</span><span class="params">(AuthenticationToken token)</span> <span class="keyword">throws</span> AuthenticationException </span>&#123;</span><br><span class="line"></span><br><span class="line">    	<span class="comment">// 获取用户输入的用户名和密码</span></span><br><span class="line">        String userName = (String) token.getPrincipal();</span><br><span class="line">        String password = <span class="keyword">new</span> String((<span class="keyword">char</span>[]) token.getCredentials());</span><br><span class="line">        </span><br><span class="line">        System.out.println(<span class="string">"用户"</span> + userName + <span class="string">"认证-----ShiroRealm.doGetAuthenticationInfo"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通过用户名到数据库查询用户信息</span></span><br><span class="line">        User user = userMapper.findByUserName(userName);</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (user == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">//UnknownAccountException等异常为Shiro自带异常</span></span><br><span class="line">            <span class="comment">//Shiro具有丰富的运行时AuthenticationException层次结构，可以准确指出尝试失败的原因</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> UnknownAccountException(<span class="string">"用户名或密码错误！"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!password.equals(user.getPassword())) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IncorrectCredentialsException(<span class="string">"用户名或密码错误！"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (user.getStatus().equals(<span class="string">"0"</span>)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> LockedAccountException(<span class="string">"账号已被锁定,请联系管理员！"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        SimpleAuthenticationInfo info = <span class="keyword">new</span> SimpleAuthenticationInfo(user, password, getName());</span><br><span class="line">        <span class="keyword">return</span> info;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/login"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">login</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"login"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping</span>(<span class="string">"/login"</span>)</span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ResponseBo <span class="title">login</span><span class="params">(String username, String password)</span> </span>&#123;</span><br><span class="line">    	<span class="comment">// 密码MD5加密</span></span><br><span class="line">        password = MD5Utils.encrypt(username, password);</span><br><span class="line">        <span class="comment">//组装token</span></span><br><span class="line">        UsernamePasswordToken token = <span class="keyword">new</span> UsernamePasswordToken(username, password);</span><br><span class="line">        <span class="comment">// 获取Subject对象</span></span><br><span class="line">        Subject subject = SecurityUtils.getSubject();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            subject.login(token);</span><br><span class="line">            <span class="keyword">return</span> ResponseBo.ok();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (UnknownAccountException e) &#123;</span><br><span class="line">            <span class="keyword">return</span> ResponseBo.error(e.getMessage());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IncorrectCredentialsException e) &#123;</span><br><span class="line">            <span class="keyword">return</span> ResponseBo.error(e.getMessage());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (LockedAccountException e) &#123;</span><br><span class="line">            <span class="keyword">return</span> ResponseBo.error(e.getMessage());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (AuthenticationException e) &#123;</span><br><span class="line">            <span class="keyword">return</span> ResponseBo.error(<span class="string">"认证失败！"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping</span>(<span class="string">"/"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">redirectIndex</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"redirect:/index"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping</span>(<span class="string">"/index"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">index</span><span class="params">(Model model)</span> </span>&#123;</span><br><span class="line">    	<span class="comment">// 登录成后，即可通过Subject获取登录的用户信息</span></span><br><span class="line">        User user = (User) SecurityUtils.getSubject().getPrincipal();</span><br><span class="line">        model.addAttribute(<span class="string">"user"</span>, user);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"index"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="引入缓存redis"><a href="#引入缓存redis" class="headerlink" title="引入缓存redis"></a>引入缓存redis</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- shiro-redis --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span>    </span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.crazycake<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span>    </span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>shiro-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span>    </span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.4.2.1-RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在ShiroConfig中配置Redis</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//配置RedisManager，并将其注入到了RedisCacheManager中</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> RedisManager <span class="title">redisManager</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    RedisManager redisManager = <span class="keyword">new</span> RedisManager();</span><br><span class="line">    <span class="keyword">return</span> redisManager;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> RedisCacheManager <span class="title">cacheManager</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    RedisCacheManager redisCacheManager = <span class="keyword">new</span> RedisCacheManager();</span><br><span class="line">    redisCacheManager.setRedisManager(redisManager());</span><br><span class="line">    <span class="keyword">return</span> redisCacheManager;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">......</span><br><span class="line"><span class="comment">//在SecurityManager中加入RedisCacheManager</span></span><br><span class="line"><span class="meta">@Bean</span>  </span><br><span class="line"><span class="function"><span class="keyword">public</span> SecurityManager <span class="title">securityManager</span><span class="params">()</span></span>&#123;  </span><br><span class="line">    DefaultWebSecurityManager securityManager =  <span class="keyword">new</span> DefaultWebSecurityManager();</span><br><span class="line">    ...</span><br><span class="line">    securityManager.setCacheManager(cacheManager());</span><br><span class="line">    <span class="keyword">return</span> securityManager;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="引入Ehcache"><a href="#引入Ehcache" class="headerlink" title="引入Ehcache"></a>引入Ehcache</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- shiro ehcache --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.shiro<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>shiro-ehcache<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.3.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- ehchache --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-cache<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>net.sf.ehcache<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>ehcache<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在src/main/resource/config路径下新增一个Ehcache配置——shiro-ehcache.xml：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ehcache</span> <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xsi:noNamespaceSchemaLocation</span>=<span class="string">"http://ehcache.org/ehcache.xsd"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">updateCheck</span>=<span class="string">"false"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">diskStore</span> <span class="attr">path</span>=<span class="string">"java.io.tmpdir/Tmp_EhCache"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">defaultCache</span></span></span><br><span class="line"><span class="tag">        <span class="attr">maxElementsInMemory</span>=<span class="string">"10000"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">eternal</span>=<span class="string">"false"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">timeToIdleSeconds</span>=<span class="string">"120"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">timeToLiveSeconds</span>=<span class="string">"120"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">overflowToDisk</span>=<span class="string">"false"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">diskPersistent</span>=<span class="string">"false"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">diskExpiryThreadIntervalSeconds</span>=<span class="string">"120"</span> /&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- 登录记录缓存锁定1小时 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">cache</span> </span></span><br><span class="line"><span class="tag">        <span class="attr">name</span>=<span class="string">"passwordRetryCache"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">maxEntriesLocalHeap</span>=<span class="string">"2000"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">eternal</span>=<span class="string">"false"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">timeToIdleSeconds</span>=<span class="string">"3600"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">timeToLiveSeconds</span>=<span class="string">"0"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">overflowToDisk</span>=<span class="string">"false"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">statistics</span>=<span class="string">"true"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ehcache</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>接着在ShiroConfig中注入Ehcache缓存：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> EhCacheManager <span class="title">getEhCacheManager</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    EhCacheManager em = <span class="keyword">new</span> EhCacheManager();</span><br><span class="line">    em.setCacheManagerConfigFile(<span class="string">"classpath:config/shiro-ehcache.xml"</span>);</span><br><span class="line">    <span class="keyword">return</span> em;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>将缓存对象注入到SecurityManager中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span>  </span><br><span class="line"><span class="function"><span class="keyword">public</span> SecurityManager <span class="title">securityManager</span><span class="params">()</span></span>&#123;  </span><br><span class="line">    DefaultWebSecurityManager securityManager =  <span class="keyword">new</span> DefaultWebSecurityManager();</span><br><span class="line">    securityManager.setRealm(shiroRealm());</span><br><span class="line">    securityManager.setRememberMeManager(rememberMeManager());</span><br><span class="line">    securityManager.setCacheManager(getEhCacheManager());</span><br><span class="line">    <span class="keyword">return</span> securityManager;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Thymeleaf中使用Shiro标签"><a href="#Thymeleaf中使用Shiro标签" class="headerlink" title="Thymeleaf中使用Shiro标签"></a>Thymeleaf中使用Shiro标签</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--引入第三方实现--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.github.theborakompanioni<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>thymeleaf-extras-shiro<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>引入依赖后，需要在ShiroConfig中配置该方言标签：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ShiroDialect <span class="title">shiroDialect</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ShiroDialect();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>前端使用</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> <span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">xmlns:th</span>=<span class="string">"http://www.thymeleaf.org"</span> </span></span><br><span class="line"><span class="tag">      <span class="attr">xmlns:shiro</span>=<span class="string">"http://www.pollix.at/thymeleaf/shiro"</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>首页<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    <div>
+      
+    </div>
+
+  
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/12/springboot全家桶/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -942,7 +1454,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
